@@ -66,7 +66,8 @@ SELECT
     *
 FROM
     student
-INNER JOIN class ON student.class_id = class.class_id ;
+		JOIN
+    class ON student.class_id = class.class_id;
     
  -- 2. Lấy ra thông tin tất cả học viên (bao gồm có và chưa có lớp) và tên lớp (nếu có) mà các học viên đó đang theo học.   
 SELECT 
@@ -78,10 +79,10 @@ LEFT JOIN class ON student.class_id = class.class_id ;
 -- 3. Lấy thông tin của các học viên tên “Hai” và 'Huynh’.
 SELECT 
     *
-FROM
+FROM	
     student
 WHERE
-    student_name LIKE "%hai" OR student_name LIKE "%huynh";
+    student_name LIKE "% hai" OR student_name LIKE "% huynh";
     
 -- 4. Lấy ra thông tin học viên có điểm lớn hơn 5    
 SELECT 
@@ -97,18 +98,19 @@ SELECT
 FROM
     student
 WHERE
-    student_name LIKE 'nguyen%';
+    student_name LIKE 'nguyen %';
 
 -- 6. Thông kế số lượng học sinh theo từng loại điểm.    
 SELECT 
-    COUNT(*),student_point
+    COUNT(*), 
+    student_point
 FROM
     student
 GROUP BY student_point;
 
 -- 7. Thông kế số lượng học sinh theo điểm và điểm phải lớn hơn 5
 SELECT 
-    COUNT(*), student_point
+    COUNT(*) AS "so luong", student_point
 FROM
     student
 WHERE
@@ -125,4 +127,15 @@ WHERE
 GROUP BY student_point
 HAVING COUNT(*) >= 2;  
 
+-- 9. Lấy ra danh sách học viên của lớp c1121g1 và sắp xếp tên học viên theo alphabet.
+
+SELECT 
+    student.student_name,class.class_name
+FROM
+    student
+        JOIN
+    class ON class.class_id = student.class_id
+WHERE class.class_name = "c1121g1"
+ORDER BY substring_index(student.student_name," ", -1);
+    
 
