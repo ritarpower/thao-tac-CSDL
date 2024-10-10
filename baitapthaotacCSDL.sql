@@ -62,12 +62,12 @@ insert into instructor(instructor_name,instructor_birthday, instructor_salary)
  insert into instructor_class(class_id,instructor_id) values (1,1),(1,2),(2,1),(2,2),(3,1),(3,2);
  
 -- 1. Lấy ra thông tin tất cả học viên có lớp học và tên lớp mà các học viên đó đang theo học. 
-SELECT 
-    *
-FROM
-    student
-		JOIN
-    class ON student.class_id = class.class_id;
+-- SELECT 
+--     *
+-- FROM
+--     student
+-- 		JOIN
+--     class ON student.class_id = class.class_id;
     
  -- 2. Lấy ra thông tin tất cả học viên (bao gồm có và chưa có lớp) và tên lớp (nếu có) mà các học viên đó đang theo học.   
 SELECT 
@@ -77,65 +77,104 @@ FROM
 LEFT JOIN class ON student.class_id = class.class_id ;
     
 -- 3. Lấy thông tin của các học viên tên “Hai” và 'Huynh’.
-SELECT 
-    *
-FROM	
-    student
-WHERE
-    student_name LIKE "% hai" OR student_name LIKE "% huynh";
+-- SELECT 
+--     *
+-- FROM	
+--     student
+-- WHERE
+--     student_name LIKE "% hai" OR student_name LIKE "% huynh";
     
 -- 4. Lấy ra thông tin học viên có điểm lớn hơn 5    
-SELECT 
-    *
-FROM
-    student
-WHERE
-    student_point > 5;
-    
--- 5. Lấy ra thông tin học viên có họ là “nguyen”    
-SELECT 
-    *
-FROM
-    student
-WHERE
-    student_name LIKE 'nguyen %';
+-- SELECT 
+--     *
+-- FROM
+--     student
+-- WHERE
+--     student_point > 5;
+--     
+-- -- 5. Lấy ra thông tin học viên có họ là “nguyen”    
+-- SELECT 
+--     *
+-- FROM
+--     student
+-- WHERE
+--     student_name LIKE 'nguyen %';
 
 -- 6. Thông kế số lượng học sinh theo từng loại điểm.    
-SELECT 
-    COUNT(*), 
-    student_point
-FROM
-    student
-GROUP BY student_point;
+-- SELECT 
+--     COUNT(*), 
+--     student_point
+-- FROM
+--     student
+-- GROUP BY student_point;
 
--- 7. Thông kế số lượng học sinh theo điểm và điểm phải lớn hơn 5
-SELECT 
-    COUNT(*) AS "so luong", student_point
-FROM
-    student
-WHERE
-    student_point > 5
-GROUP BY student_point;
+-- -- 7. Thông kế số lượng học sinh theo điểm và điểm phải lớn hơn 5
+-- SELECT 
+--     COUNT(*) AS "so luong", student_point
+-- FROM
+--     student
+-- WHERE
+--     student_point > 5
+-- GROUP BY student_point;
 
 -- 8. Thông kế số lượng học sinh theo điểm lớn hơn 5 và chỉ hiện thị với số lượng >= 2    
-SELECT 
-    COUNT(*), student_point
-FROM
-    student
-WHERE
-    student_point > 5
-GROUP BY student_point
-HAVING COUNT(*) >= 2;  
+-- SELECT 
+--     COUNT(*), student_point
+-- FROM
+--     student
+-- WHERE
+--     student_point > 5
+-- GROUP BY student_point
+-- HAVING COUNT(*) >= 2;  
 
 -- 9. Lấy ra danh sách học viên của lớp c1121g1 và sắp xếp tên học viên theo alphabet.
 
+-- SELECT 
+--     student.student_name,class.class_name
+-- FROM
+--     student
+--         JOIN
+--     class ON class.class_id = student.class_id
+-- WHERE class.class_name = "c1121g1"
+-- ORDER BY substring_index(student.student_name," ", -1);
+
+
+
+-- 1. Hiện thị danh sách các lớp có học viên theo học và số lượng học viên của mỗi lớp.
+
 SELECT 
-    student.student_name,class.class_name
+    c.class_name, COUNT(*) AS students
 FROM
-    student
-        JOIN
-    class ON class.class_id = student.class_id
-WHERE class.class_name = "c1121g1"
-ORDER BY substring_index(student.student_name," ", -1);
+    student s
+        LEFT JOIN
+    class c ON s.class_id = c.class_id
+WHERE
+    s.class_id IS NOT NULL
+GROUP BY c.class_name;
+    
+-- 2. Tìm điểm lớn nhất của từng lớp.
+
+SELECT 
+    c.class_name,
+    s.student_point
+FROM 
+    student s
+JOIN 
+    class c ON s.class_id = c.class_id
+WHERE 
+    (s.class_id, s.student_point) IN (
+        SELECT 
+            class_id, 
+            MAX(student_point)
+        FROM 
+            student
+        GROUP BY 
+            class_id
+    );
+    
+	
+
+
+
     
 
