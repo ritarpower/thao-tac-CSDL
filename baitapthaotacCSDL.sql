@@ -146,33 +146,62 @@ SELECT
     c.class_name, COUNT(*) AS students
 FROM
     student s
-        LEFT JOIN
+        JOIN
     class c ON s.class_id = c.class_id
-WHERE
-    s.class_id IS NOT NULL
 GROUP BY c.class_name;
     
 -- 2. Tìm điểm lớn nhất của từng lớp.
 
 SELECT 
-    c.class_name,
-    s.student_point
-FROM 
+    c.class_name, MAX(s.student_point) AS max_point
+FROM
     student s
-JOIN 
+        JOIN
     class c ON s.class_id = c.class_id
-WHERE 
-    (s.class_id, s.student_point) IN (
-        SELECT 
-            class_id, 
-            MAX(student_point)
-        FROM 
-            student
-        GROUP BY 
-            class_id
-    );
+GROUP BY c.class_name;
+
+-- 3. Tìm điểm trung bình của từng lớp.
+
+SELECT 
+    c.class_name, AVG(s.student_point) AS avg_point
+FROM
+    student s
+        JOIN
+    class c ON s.class_id = c.class_id
+GROUP BY c.class_name;
+
+-- 4. Lấy ra toàn bộ tên và ngày sinh các instructor và student ở CodeGym (sử dụng UNION).
+
+SELECT 
+    s.student_name AS name_in_codegym,
+    s.student_birthday AS birthday_in_codegym
+FROM
+    student s 
+UNION SELECT 
+    i.instructor_name, i.instructor_birthday
+FROM
+    instructor i;
     
-	
+-- 5. Lấy ra top 3 học viên có điểm cao nhất của trung tâm.
+
+SELECT 
+    s.student_name, s.student_point
+FROM
+    student s
+ORDER BY s.student_point DESC
+LIMIT 3;
+
+-- 6. Lấy ra các học viên có điểm số là cao nhất của trung tâm.
+
+SELECT 
+    s.student_name, s.student_point
+FROM
+    student s
+WHERE
+    s.student_point IN (SELECT 
+            MAX(s.student_point)
+        FROM
+            student s)
 
 
 
