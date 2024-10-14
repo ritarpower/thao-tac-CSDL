@@ -138,72 +138,112 @@ LEFT JOIN class ON student.class_id = class.class_id ;
 -- WHERE class.class_name = "c1121g1"
 -- ORDER BY substring_index(student.student_name," ", -1);
 
-
+-- ------------------------------------------------------------------------------
 
 -- 1. Hiện thị danh sách các lớp có học viên theo học và số lượng học viên của mỗi lớp.
 
-SELECT 
-    c.class_name, COUNT(*) AS students
-FROM
-    student s
-        JOIN
-    class c ON s.class_id = c.class_id
-GROUP BY c.class_name;
+-- SELECT 
+--     c.class_name, COUNT(*) AS students
+-- FROM
+--     student s
+--         JOIN
+--     class c ON s.class_id = c.class_id
+-- GROUP BY c.class_name;
     
 -- 2. Tìm điểm lớn nhất của từng lớp.
 
-SELECT 
-    c.class_name, MAX(s.student_point) AS max_point
-FROM
-    student s
-        JOIN
-    class c ON s.class_id = c.class_id
-GROUP BY c.class_name;
+-- SELECT 
+--     c.class_name, MAX(s.student_point) AS max_point
+-- FROM
+--     student s
+--         JOIN
+--     class c ON s.class_id = c.class_id
+-- GROUP BY c.class_name;
 
 -- 3. Tìm điểm trung bình của từng lớp.
 
-SELECT 
-    c.class_name, AVG(s.student_point) AS avg_point
-FROM
-    student s
-        JOIN
-    class c ON s.class_id = c.class_id
-GROUP BY c.class_name;
+-- SELECT 
+--     c.class_name, AVG(s.student_point) AS avg_point
+-- FROM
+--     student s
+--         JOIN
+--     class c ON s.class_id = c.class_id
+-- GROUP BY c.class_name;
 
 -- 4. Lấy ra toàn bộ tên và ngày sinh các instructor và student ở CodeGym (sử dụng UNION).
 
-SELECT 
-    s.student_name AS name_in_codegym,
-    s.student_birthday AS birthday_in_codegym
-FROM
-    student s 
-UNION SELECT 
-    i.instructor_name, i.instructor_birthday
-FROM
-    instructor i;
+-- SELECT 
+--     s.student_name AS name_in_codegym,
+--     s.student_birthday AS birthday_in_codegym
+-- FROM
+--     student s 
+-- UNION SELECT 
+--     i.instructor_name, i.instructor_birthday
+-- FROM
+--     instructor i;
     
 -- 5. Lấy ra top 3 học viên có điểm cao nhất của trung tâm.
 
-SELECT 
-    s.student_name, s.student_point
-FROM
-    student s
-ORDER BY s.student_point DESC
-LIMIT 3;
+-- SELECT 
+--     s.student_name, s.student_point
+-- FROM
+--     student s
+-- ORDER BY s.student_point DESC
+-- LIMIT 3;
 
 -- 6. Lấy ra các học viên có điểm số là cao nhất của trung tâm.
 
-SELECT 
-    s.student_name, s.student_point
-FROM
-    student s
-WHERE
-    s.student_point IN (SELECT 
-            MAX(s.student_point)
-        FROM
-            student s)
+-- SELECT 
+--     s.student_name, s.student_point
+-- FROM
+--     student s
+-- WHERE
+--     s.student_point IN (SELECT 
+--             MAX(s.student_point)
+--         FROM
+--             student s);
 
+-- ------------------------------------------------------
 
+-- 1.Đánh và xóa INDEX lên cột email của bảng student
 
-    
+CREATE INDEX idx_email
+ON student(student_email);
 
+DROP INDEX idx_email
+ON student;
+
+-- 2.Tạo và xóa view chứa id, tên học viên.
+
+CREATE VIEW students_view AS
+    SELECT 
+        student_id, student_name
+    FROM
+        student;
+
+SELECT * FROM students_view;
+
+-- DROP VIEW students_view;
+
+-- 3.Tạo 1 stored procedure findByName() thực hiện việc tìm kiếm theo tên.
+
+DELIMITER //
+
+CREATE PROCEDURE findByLastName(IN name_find VARCHAR(50))
+BEGIN
+    SELECT * FROM student WHERE student_name LIKE CONCAT("% ",name_find);
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE findByFullName(IN name_find VARCHAR(50))
+BEGIN
+    SELECT * FROM student WHERE student_name = name_find;
+END //
+
+DELIMITER ;
+
+call findByFullName("ta dinh huynh"); 
+call findByLastName("huynh");
