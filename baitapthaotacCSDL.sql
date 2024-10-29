@@ -207,7 +207,7 @@ LEFT JOIN class ON student.class_id = class.class_id ;
 
 -- 1.Đánh và xóa INDEX lên cột email của bảng student
 
-CREATE INDEX idx_email
+CREATE UNIQUE INDEX idx_email
 ON student(student_email);
 
 DROP INDEX idx_email
@@ -229,21 +229,17 @@ SELECT * FROM students_view;
 
 DELIMITER //
 
-CREATE PROCEDURE findByLastName(IN name_find VARCHAR(50))
+CREATE PROCEDURE findByName(IN name_find VARCHAR(50))
 BEGIN
-    SELECT * FROM student WHERE student_name LIKE CONCAT("% ",name_find);
+    SELECT student_id AS id, student_name AS name, student_birthday AS birthday, "student" AS role 
+    FROM student 
+    WHERE student_name LIKE CONCAT("% ",name_find) OR student_name = name_find
+    UNION
+    SELECT instructor_id,instructor_name, instructor_birthday, "instructor" AS role 
+    FROM instructor 
+    WHERE instructor_name LIKE CONCAT("% ",name_find) OR instructor_name = name_find;
 END //
 
 DELIMITER ;
 
-DELIMITER //
-
-CREATE PROCEDURE findByFullName(IN name_find VARCHAR(50))
-BEGIN
-    SELECT * FROM student WHERE student_name = name_find;
-END //
-
-DELIMITER ;
-
-call findByFullName("ta dinh huynh"); 
-call findByLastName("huynh");
+call findByName("ta dinh huynh");
